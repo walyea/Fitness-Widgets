@@ -57,11 +57,16 @@ class HKManager {
         // the query to healthkit
         let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: 1, sortDescriptors: [sortDescriptor]) { _, samples, _ in
             // force unwraps the value from an optional and then converts it into a HKQuanttitySample
-            let stepCount = samples!.first! as? HKQuantitySample
+            var stepCount: Double  = 0
+            // checking if it exists before deference
+            if  samples?.first != nil{
+                let sample = samples!.first! as? HKQuantitySample
+                stepCount = sample!.quantity.doubleValue(for: unit)
+            }
             // for UI updates on Main Thread
             DispatchQueue.main.async {
                 // Completion handler, explaned above
-                completion(stepCount!.quantity.doubleValue(for: unit))
+                completion(stepCount)
             }
         }
         healthStore.execute(query)
