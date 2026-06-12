@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-@main
 
+@main
 struct Fitness_WidgetsApp: App {
-    
+
     var body: some Scene {
         WindowGroup {
             ContentView()

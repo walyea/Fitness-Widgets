@@ -15,13 +15,19 @@ class HKManager {
             HKQuantityType.quantityType(forIdentifier: .stepCount)!,
             HKQuantityType.quantityType(forIdentifier: .heartRate)!,
             HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned)!,
-            HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-            HKQuantityType.quantityType(forIdentifier: .walkingHeartRateAverage)!,
+            HKQuantityType.quantityType(
+                forIdentifier: .distanceWalkingRunning
+            )!,
+            HKQuantityType.quantityType(
+                forIdentifier: .walkingHeartRateAverage
+            )!,
             HKQuantityType.quantityType(forIdentifier: .restingHeartRate)!,
             HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
         ]
 
-        healthStore.requestAuthorization(toShare: [], read: typesToRead) { success, error in
+        healthStore.requestAuthorization(toShare: [], read: typesToRead) {
+            success,
+            error in
             completion(success, error)
         }
     }
@@ -29,12 +35,24 @@ class HKManager {
     // type the data
     // unit the unit of the data
     // completion runs when the query returns return the data
-    func getSumData(for type: HKQuantityType, with unit: HKUnit, completion: @escaping (Double) -> Void) {
+    func getSumData(
+        for type: HKQuantityType,
+        with unit: HKUnit,
+        completion: @escaping (Double) -> Void
+    ) {
         let startDate = Calendar.current.startOfDay(for: Date())
         // how to formate the data
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: Date(), options: .strictStartDate)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate,
+            end: Date(),
+            options: .strictStartDate
+        )
         // the query to healthkit
-        let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
+        let query = HKStatisticsQuery(
+            quantityType: type,
+            quantitySamplePredicate: predicate,
+            options: .cumulativeSum
+        ) { _, result, _ in
             // the data could be nil so that is why there are ?
             let data = result?.sumQuantity()?.doubleValue(for: unit) ?? -1
             // for UI updates on Main Thread; it switches from the background queue, thread,  that the query is on to the main thread for ui
@@ -49,17 +67,33 @@ class HKManager {
     // type the data
     // unit the unit of the data
     // completion runs when the query returns return the data
-    func getSampleData(for type: HKQuantityType, with unit: HKUnit, completion: @escaping (Double) -> Void) {
+    func getSampleData(
+        for type: HKQuantityType,
+        with unit: HKUnit,
+        completion: @escaping (Double) -> Void
+    ) {
         // how to formate the data
-        let predicate = HKQuery.predicateForSamples(withStart: Calendar.current.startOfDay(for: Date()), end: Date(), options: .strictStartDate)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: Calendar.current.startOfDay(for: Date()),
+            end: Date(),
+            options: .strictStartDate
+        )
         // how to sort the returned data because can return more than 1
-        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        let sortDescriptor = NSSortDescriptor(
+            key: HKSampleSortIdentifierEndDate,
+            ascending: false
+        )
         // the query to healthkit
-        let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: 1, sortDescriptors: [sortDescriptor]) { _, samples, _ in
+        let query = HKSampleQuery(
+            sampleType: type,
+            predicate: predicate,
+            limit: 1,
+            sortDescriptors: [sortDescriptor]
+        ) { _, samples, _ in
             // force unwraps the value from an optional and then converts it into a HKQuanttitySample
-            var stepCount: Double  = 0
+            var stepCount: Double = 0
             // checking if it exists before deference
-            if  samples?.first != nil{
+            if samples?.first != nil {
                 let sample = samples!.first! as? HKQuantitySample
                 stepCount = sample!.quantity.doubleValue(for: unit)
             }

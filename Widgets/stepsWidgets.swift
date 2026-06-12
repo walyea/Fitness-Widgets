@@ -1,6 +1,6 @@
+import HealthKit
 import SwiftUI
 import WidgetKit
-import HealthKit
 
 // Representation of the Widget
 struct stepsWidgetEntry: TimelineEntry {
@@ -12,40 +12,53 @@ struct stepsWidgetEntry: TimelineEntry {
 // Shows how the widget should change over time
 struct stepsWidgetProvider: TimelineProvider {
     let healthManager = HKManager()
-    
+
     // the view in the selection menu
     func placeholder(in context: Context) -> stepsWidgetEntry {
-        stepsWidgetEntry(date: Date(), steps: 0, distance: 0 )
+        stepsWidgetEntry(date: Date(), steps: 0, distance: 0)
     }
-    
+
     // the view at some pointt
-    func getSnapshot(in context: Context, completion: @escaping (stepsWidgetEntry) -> Void) {
-        let entry = stepsWidgetEntry(date: Date(), steps: 0, distance: 0 )
+    func getSnapshot(
+        in context: Context,
+        completion: @escaping (stepsWidgetEntry) -> Void
+    ) {
+        let entry = stepsWidgetEntry(date: Date(), steps: 0, distance: 0)
         completion(entry)
     }
-    
+
     // the views over a period of time
-    func getTimeline(in context: Context, completion: @escaping (Timeline<stepsWidgetEntry>) -> Void) {
+    func getTimeline(
+        in context: Context,
+        completion: @escaping (Timeline<stepsWidgetEntry>) -> Void
+    ) {
         // keeps track of how many async tasks are running
         let group = DispatchGroup()
         var steps: Double = 0
         var distance: Double = 0
         // allows for the two queries to run in parrallel
-        // a tasks to the list so
+        // a tasks to the list so the process continues running
         group.enter()
-        healthManager.getSumData(for: HKQuantityType(.stepCount), with: HKUnit.count()) { sample in
+        healthManager.getSumData(
+            for: HKQuantityType(.stepCount),
+            with: HKUnit.count()
+        ) { sample in
             steps = sample
             group.leave()
         }
-    
+        // allows for the two queries to run in parrallel
+        // a tasks to the list so the process continues running
         group.enter()
-        healthManager.getSumData(for: HKQuantityType(.distanceWalkingRunning), with: HKUnit.mile()) { sample in
+        healthManager.getSumData(
+            for: HKQuantityType(.distanceWalkingRunning),
+            with: HKUnit.mile()
+        ) { sample in
             distance = sample
             group.leave()
         }
         // tells the computer to run this on the main thread to update the gui
-        // 
-        group.notify(queue: .main){
+        // runs when amount of async tasks in group is 0
+        group.notify(queue: .main) {
             let entry = stepsWidgetEntry(
                 date: Date(),
                 steps: steps,
@@ -62,17 +75,16 @@ struct stepsWidgetProvider: TimelineProvider {
             completion(timeline)
         }
     }
-    
+
 }
 
 // what it looks like
 struct stepsWidgetEntryView: View {
     var entry: stepsWidgetProvider.Entry
-    
+
     @ViewBuilder
     var body: some View {
-        
-        
+
         let content = VStack {
             Text("\(Int(entry.steps))")
             Text("\(entry.distance)")
@@ -86,22 +98,21 @@ struct stepsWidgetEntryView: View {
         } else {
             content.background(Color.clear)
         }
-        
-        
+
     }
 }
 
 // its configuration
 struct stepsWidget: Widget {
-    
+
     let kind: String = "StepDistance"
-    
+
     var body: some WidgetConfiguration {
- 
-        StaticConfiguration(kind: kind, provider: stepsWidgetProvider()) { entry in
+
+        StaticConfiguration(kind: kind, provider: stepsWidgetProvider()) {
+            entry in
             let base = stepsWidgetEntryView(entry: entry)
-            
-            
+
             if #available(iOS 17.0, macOS 14.0, watchOS 10.0, *) {
                 base.containerBackground(for: .widget) {
                     Color.clear
@@ -114,10 +125,10 @@ struct stepsWidget: Widget {
         .description("Steps and Distance Walked and Ran")
 
         #if os(iOS)
-        .supportedFamilies([.systemSmall, .systemMedium])
+            .supportedFamilies([.systemSmall, .systemMedium])
         #elseif os(macOS)
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+            .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
         #endif
-        
+
     }
 }

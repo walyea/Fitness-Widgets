@@ -5,8 +5,8 @@
 //  Created by Wylan Alyea on 6/2/26.
 //
 
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
 @main
 // Bundle of all the widgets
@@ -17,4 +17,3 @@ struct fitnessWidgetBundle: WidgetBundle {
         stepsWidget()
     }
 }
-
