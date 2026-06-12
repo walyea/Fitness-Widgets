@@ -26,19 +26,25 @@ struct stepsWidgetProvider: TimelineProvider {
     
     // the views over a period of time
     func getTimeline(in context: Context, completion: @escaping (Timeline<stepsWidgetEntry>) -> Void) {
+        // keeps track of how many async tasks are running
         let group = DispatchGroup()
         var steps: Double = 0
         var distance: Double = 0
+        // allows for the two queries to run in parrallel
+        // a tasks to the list so
         group.enter()
         healthManager.getSumData(for: HKQuantityType(.stepCount), with: HKUnit.count()) { sample in
             steps = sample
             group.leave()
         }
+    
         group.enter()
         healthManager.getSumData(for: HKQuantityType(.distanceWalkingRunning), with: HKUnit.mile()) { sample in
             distance = sample
             group.leave()
         }
+        // tells the computer to run this on the main thread to update the gui
+        // 
         group.notify(queue: .main){
             let entry = stepsWidgetEntry(
                 date: Date(),

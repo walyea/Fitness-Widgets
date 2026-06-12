@@ -82,6 +82,7 @@ struct ContentView: View {
                     }
                     healthManager.getSumData(for: HKQuantityType(.distanceWalkingRunning), with: HKUnit.mile()) { sample in
                         Distance = sample
+                        Distance = (NSString(format: "%.3f", Distance).doubleValue)
                     }
                     healthManager.getSumData(for: HKQuantityType(.stepCount), with: HKUnit.count()) { sample in
                         stepCount = sample
