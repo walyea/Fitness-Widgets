@@ -54,20 +54,28 @@ struct fitnessWidgetProvider: TimelineProvider {
 struct fitnessWidgetEntryView: View {
     var entry: fitnessWidgetProvider.Entry
 
-    @ViewBuilder
     var body: some View {
+        let calories = entry.Data
 
-        let content = VStack {
-            Text("\(Int(entry.Data))")
+        VStack(alignment: .leading, spacing: 12) {
 
-        }
+            HStack {
+                Image(systemName: "waveform.path.ecg")
+                    .foregroundStyle(.orange)
 
-        if #available(iOS 17.0, macOS 14.0, watchOS 10.0, *) {
-            content.containerBackground(for: .widget) {
-                Color.clear
+                Text("Basal Energy")
+                    .font(.headline)
+
+                Spacer()
             }
-        } else {
-            content.background(Color.clear)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("\(Int(calories))")
+                    .font(.system(size: 30, weight: .bold))
+
+                Text("kcal Today")
+                    .foregroundStyle(.secondary)
+            }
         }
 
     }

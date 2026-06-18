@@ -82,24 +82,43 @@ struct stepsWidgetProvider: TimelineProvider {
 struct stepsWidgetEntryView: View {
     var entry: stepsWidgetProvider.Entry
 
-    @ViewBuilder
     var body: some View {
+        let steps = entry.steps
+        let distance = entry.distance
+        VStack(alignment: .leading, spacing: 12) {
 
-        let content = VStack {
-            Text("\(Int(entry.steps))")
-            Text("\(entry.distance)")
+            HStack {
+                Image(systemName: "figure.walk")
+                    .foregroundStyle(.green)
 
-        }
+                Text("Steps")
+                    .font(.headline)
 
-        if #available(iOS 17.0, macOS 14.0, watchOS 10.0, *) {
-            content.containerBackground(for: .widget) {
-                Color.clear
+                Spacer()
             }
-        } else {
-            content.background(Color.clear)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(steps.formatted())
+                    .font(.system(size: 30, weight: .bold))
+
+                Text("Steps Today")
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading) {
+                Text("\(distance, specifier: "%.1f") mi")
+                    .font(.title3)
+                    .fontWeight(.bold)
+
+                Text("Distance")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
 
+        Spacer()
     }
+
 }
 
 // its configuration

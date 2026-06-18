@@ -84,21 +84,62 @@ struct heartRateWidgetEntryView: View {
 
     @ViewBuilder
     var body: some View {
+        VStack {
+            HStack {
 
-        let content = VStack {
-            Text("\(Int(entry.heartRate))")
-            Text("\(Int(entry.resting))")
+                Text("Heart Rate")
+                    .font(.system(size: 20, weight: .bold))
 
-        }
-
-        if #available(iOS 17.0, macOS 14.0, watchOS 10.0, *) {
-            content.containerBackground(for: .widget) {
-                Color.clear
+                Spacer()
             }
-        } else {
-            content.background(Color.clear)
-        }
+            Divider()
+                .overlay(.white.opacity(0.15))
 
+            HStack {
+                StatView(
+                    title: "Resting",
+                    value: entry.resting,
+                    icon: "arrow.up.heart.fill",
+                    color: .red
+                )
+
+                Spacer()
+
+                StatView(
+                    title: "Curret",
+                    value: entry.heartRate,
+                    icon: "heart.fill",
+                    color: .pink
+                )
+
+                Spacer()
+
+            }
+
+            Divider()
+        }
+    }
+
+}
+struct StatView: View {
+    let title: String
+    let value: Double
+    let icon: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .foregroundStyle(color)
+
+            Text("\(Int(value))")
+                .font(.title3)
+                .fontWeight(.bold)
+
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
     }
 }
 
