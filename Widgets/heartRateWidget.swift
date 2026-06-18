@@ -106,7 +106,7 @@ struct heartRateWidgetEntryView: View {
                 Spacer()
 
                 StatView(
-                    title: "Curret",
+                    title: "Walking",
                     value: entry.heartRate,
                     icon: "heart.fill",
                     color: .pink
