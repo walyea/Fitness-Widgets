@@ -98,7 +98,7 @@ struct stepsWidgetEntryView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(steps.formatted())
+                Text("\(Int(steps))")
                     .font(.system(size: 30, weight: .bold))
 
                 Text("Steps Today")
